@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Two - Original Implementation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">CS 340 Portfolio</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="project-two.html" class="active">Project Two</a></li>
+                <li><a href="enhancement.html">Enhancement</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="hero">
+            <h1>Project Two: Animal Shelter Dashboard</h1>
+            <p class="subtitle">Original Implementation with MongoDB CRUD Module and Plotly Dash Dashboard</p>
+        </header>
+
+        <section>
+            <h2>Overview</h2>
+            <p>Project Two is a full-stack client/server application for Grazioso Salvare, an international rescue-animal training company. The project connects a Python CRUD module to a MongoDB database and exposes the data through an interactive Plotly Dash web dashboard.</p>
+
+            <div class="details">
+                <p><strong>Technology Stack:</strong> Python, MongoDB, PyMongo, Plotly Dash, Pandas</p>
+                <p><strong>Key Concepts:</strong> CRUD Operations, MVC Pattern, Data Filtering, Interactive Visualizations</p>
+                <p><strong>GitHub:</strong> <a href="https://github.com/bzermeno/CS_340" target="_blank">View Source Code</a></p>
+            </div>
+        </section>
+
+        <section>
+            <h2>System Components</h2>
+            <p>The system is composed of two primary components that follow the Model-View-Controller (MVC) pattern:</p>
+
+            <h3>1. CRUD Python Module (<code>CRUD_Python_Module.py</code>)</h3>
+            <p>The <code>AnimalShelter</code> class encapsulates all database operations for the <code>animals</code> collection in MongoDB:</p>
+            <ul class="feature-list">
+                <li><strong>create(data):</strong> Inserts a new document and automatically assigns the next available record number if not provided</li>
+                <li><strong>read(query):</strong> Queries documents matching a filter; returns all documents when no filter is provided</li>
+                <li><strong>update(query, values):</strong> Updates all documents matching the query using <code>$set</code>; returns the count of modified documents</li>
+                <li><strong>delete(query):</strong> Deletes all documents matching the query; returns the count of deleted documents</li>
+                <li><strong>get_next_record_number():</strong> Helper method to auto-increment record numbers using a descending sort</li>
+            </ul>
+
+            <h3>2. Dashboard (<code>ProjectTwoDashboard.ipynb</code>)</h3>
+            <p>The Jupyter Dash dashboard provides an interactive interface for browsing and filtering animal data:</p>
+            <ul class="feature-list">
+                <li><strong>Grazioso Salvare Logo:</strong> Branding element displayed at the top of the dashboard</li>
+                <li><strong>Rescue Type Filter:</strong> Radio buttons to filter by All, Water Rescue, Mountain Rescue, or Disaster Rescue</li>
+                <li><strong>Interactive Data Table:</strong> Paginated, sortable, and filterable table with single-row selection</li>
+                <li><strong>Breed Pie Chart:</strong> Displays the top 5 breeds from the currently visible data</li>
+                <li><strong>Geolocation Map:</strong> Centers on the coordinates of the selected row using Dash Leaflet</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>CRUD Module Code</h2>
+
+            <h3>Class Initialization</h3>
+            <pre><code>class AnimalShelter(object):
+    """CRUD operations for Animal collection in MongoDB"""
+
+    def __init__(self, user, pwd):
+        HOST = 'localhost'
+        PORT = 27017
+        DB = 'aac'
+        COL = 'animals'
+        self.client = MongoClient(
+            f'mongodb://{user}:{pwd}@{HOST}:{PORT}/?authSource={DB}'
+        )
+        self.database = self.client[DB]
+        self.collection = self.database[COL]</code></pre>
+
+            <h3>Create Operation</h3>
+            <pre><code>def create(self, data):
+    if not data:
+        raise ValueError("Nothing to save; 'data' parameter is empty")
+    if "rec_num" not in data:
+        data["rec_num"] = self.get_next_record_number()
+    try:
+        result = self.collection.insert_one(data)
+        return result.acknowledged
+    except PyMongoError as e:
+        print(f"Insert failed: {e}")
+        return False</code></pre>
+
+            <h3>Read Operation</h3>
+            <pre><code>def read(self, query=None):
+    try:
+        return list(self.collection.find(query))
+    except PyMongoError as e:
+        print(f"Query failed: {e}")
+        return []</code></pre>
+        </section>
+
+        <section>
+            <h2>Dashboard Architecture</h2>
+            <p>The dashboard follows the MVC pattern by separating data access, layout, and interaction logic:</p>
+
+            <div class="architecture-diagram">
+┌──────────────────────────────────────┐
+│         View Layer (Layout)          │
+│  Logo, Title, Radio Buttons          │
+│  Data Table, Pie Chart, Map          │
+└──────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────┐
+│      Controller Layer (Callbacks)    │
+│  update_dashboard() → filter data   │
+│  update_graphs()   → update chart   │
+│  update_map()      → update map     │
+│  update_styles()   → highlight col  │
+└──────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────┐
+│        Model Layer (CRUD Module)     │
+│  AnimalShelter.read(query)           │
+│  MongoDB animals collection          │
+└──────────────────────────────────────┘</div>
+        </section>
+
+        <section>
+            <h2>Rescue Type Filters</h2>
+            <p>The dashboard applies predefined MongoDB queries based on the selected rescue category:</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Rescue Type</th>
+                        <th>Animal Type</th>
+                        <th>Breeds</th>
+                        <th>Sex</th>
+                        <th>Age Range (weeks)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Water Rescue</td>
+                        <td>Dog</td>
+                        <td>Labrador Retriever Mix, Chesa Bay Retr Mix, Newfoundland Mix</td>
+                        <td>Intact Female</td>
+                        <td>26 – 156</td>
+                    </tr>
+                    <tr>
+                        <td>Mountain Rescue</td>
+                        <td>Dog</td>
+                        <td>German Shepherd, Alaskan Malamute, Old English Sheepdog, Siberian Husky, Rottweiler</td>
+                        <td>Intact Male</td>
+                        <td>26 – 156</td>
+                    </tr>
+                    <tr>
+                        <td>Disaster Rescue</td>
+                        <td>Dog</td>
+                        <td>Doberman Pinscher, German Shepherd, Golden Retriever, Bloodhound, Rottweiler</td>
+                        <td>Intact Male</td>
+                        <td>20 – 300</td>
+                    </tr>
+                    <tr>
+                        <td>All</td>
+                        <td colspan="4">No filter applied — returns all records</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Key Features</h2>
+            <ul class="feature-list">
+                <li><strong>Modular Design:</strong> CRUD operations are fully separated from the dashboard UI</li>
+                <li><strong>Auto-Incrementing Records:</strong> New documents are automatically assigned sequential record numbers</li>
+                <li><strong>Interactive Filtering:</strong> Real-time data filtering via radio buttons without page reload</li>
+                <li><strong>Single-Row Selection:</strong> Clicking a table row updates both the pie chart and the map</li>
+                <li><strong>Geolocation Map:</strong> Displays the precise location of the selected animal using Dash Leaflet</li>
+                <li><strong>Error Handling:</strong> All database operations catch <code>PyMongoError</code> and return safe fallback values</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Project Structure</h2>
+            <div class="architecture-diagram">
+CS_340/
+├── CRUD_Python_Module.py          # MongoDB CRUD operations
+├── ProjectTwoDashboard.ipynb      # Plotly Dash dashboard (Jupyter)
+├── Grazioso Salvare Logo.png      # Dashboard branding image
+└── test_animal_shelter.py         # Unit tests for CRUD module</div>
+        </section>
+
+        <section>
+            <h2>Lessons Learned</h2>
+            <p>This project reinforced several important software engineering principles:</p>
+            <ul>
+                <li><strong>Separation of Concerns:</strong> Keeping the CRUD module separate from the dashboard makes each component easier to maintain and test independently</li>
+                <li><strong>MVC Pattern:</strong> Structuring the application into Model (CRUD/MongoDB), View (layout), and Controller (callbacks) improves organization</li>
+                <li><strong>Error Handling:</strong> Wrapping database calls in try/except blocks prevents application crashes and provides meaningful feedback</li>
+                <li><strong>Reactive UI:</strong> Dash callbacks enable a fully reactive interface where every component responds to user interactions without page reloads</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Next Steps</h2>
+            <p>This original implementation served as the foundation for the enhanced version. To see how this project evolved with performance optimizations and data analytics capabilities, visit the <a href="enhancement.html">Enhancement page</a>.</p>
+            <a href="enhancement.html" class="btn">View Enhancement</a>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>CS 340: Client/Server Development &mdash; Beau Zermeno</p>
+    </footer>
+
+</body>
+</html>

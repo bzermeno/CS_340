@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 340 Enhancement - Analytics &amp; Performance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">CS 340 Portfolio</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="project-two.html">Project Two</a></li>
+                <li><a href="enhancement.html" class="active">Enhancement</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="hero">
+            <h1>CS 340 Enhancement: Analytics &amp; Performance</h1>
+            <p class="subtitle">Compound Indexes, Aggregation Pipelines, and Secure Credential Handling</p>
+        </header>
+
+        <section>
+            <h2>Enhancement Overview</h2>
+            <p>Building upon the solid foundation of Project Two, this enhancement transforms the Animal Shelter system by adding performance-optimized database indexes, MongoDB aggregation pipelines for data analytics, and improved security practices in the dashboard. The enhancement demonstrates professional database design patterns and scalable data analysis techniques.</p>
+
+            <div class="details">
+                <p><strong>Technology Stack:</strong> Python, MongoDB, PyMongo, Plotly Dash, Pandas</p>
+                <p><strong>New Concepts:</strong> Compound Indexes, Aggregation Pipelines, Data Mining, Secure Credential Input</p>
+                <p><strong>GitHub:</strong> <a href="https://github.com/bzermeno/CS_340" target="_blank">View Source Code</a></p>
+            </div>
+        </section>
+
+        <section>
+            <h2>What Changed?</h2>
+            <p>The enhancement adds new capabilities while preserving all original functionality:</p>
+
+            <h3>Before (Project Two)</h3>
+            <ul>
+                <li>Basic CRUD operations with no index optimization</li>
+                <li>Hardcoded credentials in the notebook</li>
+                <li>No analytical or aggregation capabilities</li>
+                <li>Read method accepted <code>None</code> as query (could cause issues)</li>
+            </ul>
+
+            <h3>After (Enhancement)</h3>
+            <ul>
+                <li>Compound indexes on frequently queried fields for faster lookups</li>
+                <li>Runtime credential prompting in the dashboard for improved security</li>
+                <li>Three aggregation pipeline methods for trend analysis and reporting</li>
+                <li>Read method defaults to empty query <code>{}</code> for safer behavior</li>
+                <li>Comprehensive module-level docstring documenting all enhancements</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Comparison: CRUD Module</h2>
+            <p>Side-by-side comparison of key differences between <code>CRUD_Python_Module.py</code> and <code>CRUD_Python_Module_Enhancement.py</code>:</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Original (<code>CRUD_Python_Module.py</code>)</th>
+                        <th>Enhanced (<code>CRUD_Python_Module_Enhancement.py</code>)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Database Indexes</td>
+                        <td>None — relies on full collection scans</td>
+                        <td>Compound indexes on <code>animal_type/breed/age</code> and <code>intake_condition/animal_type</code></td>
+                    </tr>
+                    <tr>
+                        <td>Read Default Query</td>
+                        <td><code>collection.find(query)</code> — passes <code>None</code> if not provided</td>
+                        <td><code>collection.find(query or {})</code> — always passes a valid dict</td>
+                    </tr>
+                    <tr>
+                        <td>Analytics Methods</td>
+                        <td>Not available</td>
+                        <td><code>adoption_trends_by_breed()</code>, <code>adoption_trends_by_age()</code>, <code>intake_condition_analysis()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Documentation</td>
+                        <td>Inline comments per method</td>
+                        <td>Full module-level docstring with author, date, description, and usage examples</td>
+                    </tr>
+                    <tr>
+                        <td>Import Statement</td>
+                        <td><code>from pymongo import MongoClient</code></td>
+                        <td><code>from pymongo import MongoClient, ASCENDING</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Comparison: Dashboard</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Original (<code>ProjectTwoDashboard.ipynb</code>)</th>
+                        <th>Enhanced (<code>ProjectTwoDashboard_Enhancement.ipynb</code>)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Credentials</td>
+                        <td>Hardcoded <code>username</code> and <code>password</code> variables in the notebook</td>
+                        <td>Prompted at runtime with <code>input()</code> — credentials never stored in source</td>
+                    </tr>
+                    <tr>
+                        <td>CRUD Module Import</td>
+                        <td>Imports from <code>CRUD_Python_Module</code></td>
+                        <td>Imports from <code>CRUD_Python_Module_Enhancement</code></td>
+                    </tr>
+                    <tr>
+                        <td>Analytics Access</td>
+                        <td>Not available through the dashboard</td>
+                        <td>Can call aggregation methods from the enhanced module</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Performance Enhancements: Compound Indexes</h2>
+            <p>The enhanced module automatically creates two compound indexes on startup to accelerate the most common query patterns:</p>
+
+            <h3>Index 1: Animal Breed Age Index</h3>
+            <pre><code>self.collection.create_index(
+    [
+        ("animal_type", ASCENDING),
+        ("breed", ASCENDING),
+        ("age", ASCENDING)
+    ],
+    name="animal_breed_age_idx"
+)</code></pre>
+            <p>This index dramatically speeds up the rescue type filter queries used by the dashboard, which filter by <code>animal_type</code>, <code>breed</code>, and <code>age_upon_outcome_in_weeks</code>.</p>
+
+            <h3>Index 2: Intake Condition Index</h3>
+            <pre><code>self.collection.create_index(
+    [
+        ("intake_condition", ASCENDING),
+        ("animal_type", ASCENDING)
+    ],
+    name="intake_condition_idx"
+)</code></pre>
+            <p>This index supports the <code>intake_condition_analysis()</code> aggregation pipeline, which groups animals by intake condition.</p>
+
+            <h3>Index Initialization</h3>
+            <pre><code>def __init__(self, user, pwd):
+    # ... connection setup ...
+    self._create_indexes()  # Called automatically on every instantiation</code></pre>
+            <p>Indexes are created safely via <code>create_index()</code>, which is idempotent—calling it multiple times with the same parameters has no negative effect.</p>
+        </section>
+
+        <section>
+            <h2>Data Analytics: Aggregation Pipelines</h2>
+            <p>Three new analytical methods use MongoDB's aggregation framework to support data mining and trend analysis without loading all records into Python memory:</p>
+
+            <h3>1. Adoption Trends by Breed</h3>
+            <pre><code>def adoption_trends_by_breed(self, animal_type):
+    pipeline = [
+        {"$match": {"animal_type": animal_type}},
+        {"$group": {"_id": "$breed", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    return list(self.collection.aggregate(pipeline))</code></pre>
+            <p>Returns a ranked list of breeds by frequency for a given animal type. Useful for identifying which breeds are most commonly available for rescue training.</p>
+
+            <h3>2. Adoption Trends by Age</h3>
+            <pre><code>def adoption_trends_by_age(self, animal_type):
+    pipeline = [
+        {"$match": {"animal_type": animal_type}},
+        {"$group": {"_id": "$age", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    return list(self.collection.aggregate(pipeline))</code></pre>
+            <p>Groups animals by age and returns frequency counts in ascending order. Supports age distribution analysis for a given animal type.</p>
+
+            <h3>3. Intake Condition Analysis</h3>
+            <pre><code>def intake_condition_analysis(self):
+    pipeline = [
+        {"$group": {"_id": "$intake_condition", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    return list(self.collection.aggregate(pipeline))</code></pre>
+            <p>Analyzes intake conditions across all animals and returns a ranked summary. Helps identify patterns in how animals arrive at the shelter.</p>
+        </section>
+
+        <section>
+            <h2>Security Improvement: Credential Handling</h2>
+            <p>One of the most impactful changes in the enhanced dashboard is the removal of hardcoded credentials:</p>
+
+            <h3>Before (Original Dashboard)</h3>
+            <pre><code># Hardcoded credentials visible in source
+username = 'aacuser'
+password = 'JeyAndMax2025'
+db = AnimalShelter(username, password)</code></pre>
+
+            <h3>After (Enhanced Dashboard)</h3>
+            <pre><code># Credentials prompted at runtime — never stored in source
+username = input("Enter username: ")
+password = input("Enter password: ")
+db = AnimalShelter(username, password)</code></pre>
+            <p>This change ensures that credentials are never committed to version control, reducing the risk of accidental credential exposure in public repositories.</p>
+        </section>
+
+        <section>
+            <h2>Scalability Improvements</h2>
+            <p>The enhancements are specifically designed to support larger datasets:</p>
+            <ul class="feature-list">
+                <li><strong>Server-Side Analytics:</strong> Aggregation pipelines run on the MongoDB server, reducing network transfer and Python memory usage</li>
+                <li><strong>Index-Accelerated Queries:</strong> Compound indexes prevent full collection scans as the dataset grows</li>
+                <li><strong>Idempotent Index Creation:</strong> <code>_create_indexes()</code> is safe to call repeatedly, enabling use across multiple application instances</li>
+                <li><strong>Modular Analytics:</strong> Each analytical method is independent, making it easy to add new pipeline methods without modifying existing code</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Enhancement Narrative</h2>
+            <p>This enhancement demonstrates the evolution from a functional prototype to a performance-aware, analytics-capable application. The transformation showcases several important software engineering skills:</p>
+
+            <h3>Database Performance Design</h3>
+            <p>Adding compound indexes shows an understanding of database internals and query optimization. By analyzing which fields are most commonly used in filter queries, I identified the optimal index structure to minimize query execution time as the dataset grows.</p>
+
+            <h3>Data Mining with Aggregation Pipelines</h3>
+            <p>Implementing MongoDB aggregation pipelines demonstrates the ability to leverage database-native capabilities for analytics. Rather than loading all records into Python and computing statistics with Pandas, the enhanced module delegates computation to MongoDB—a more scalable and efficient approach.</p>
+
+            <h3>Security Awareness</h3>
+            <p>Replacing hardcoded credentials with runtime input demonstrates awareness of secure coding practices. Credentials embedded in source files are a common security vulnerability, especially in academic projects that may be shared publicly.</p>
+
+            <h3>Backward Compatibility</h3>
+            <p>The enhancement preserves all original CRUD functionality while adding new capabilities. All existing dashboard features continue to work unchanged. This demonstrates the ability to extend a system without breaking existing behavior—a critical skill in professional software development.</p>
+        </section>
+
+        <section>
+            <h2>Future Enhancements</h2>
+            <p>The architecture supports continued evolution:</p>
+            <ul>
+                <li>Expose aggregation results directly in the dashboard as additional visualizations (age distribution chart, intake condition bar chart)</li>
+                <li>Implement user authentication with role-based access control</li>
+                <li>Add database connection pooling for multi-user environments</li>
+                <li>Integrate geospatial indexes for location-based queries</li>
+                <li>Add export functionality to download filtered data as CSV</li>
+                <li>Implement caching for frequently used aggregation results</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Comparison</h2>
+            <p>To see the original implementation that served as the foundation for this enhancement, visit the <a href="project-two.html">Project Two page</a>.</p>
+            <a href="project-two.html" class="btn">View Project Two</a>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>CS 340: Client/Server Development &mdash; Beau Zermeno</p>
+    </footer>
+
+</body>
+</html>
